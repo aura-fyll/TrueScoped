@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Free online PDF compressor. Compress a PDF to 1 MB, 300 KB, 100 KB, or a custom target. 100% in-browser, no upload, no signup.">
+  <title>PDF Compressor — Free, in-browser, target file size | TrueScoped</title>
+  <link rel="canonical" href="/tools/pdf-compressor/">
+  <style>
+    :root {
+      --c-bg: #f7f8f9;
+      --c-surface: #ffffff;
+      --c-text: #202223;
+      --c-muted: #6f7578;
+      --c-accent: #1f6c93;
+      --c-border: #d8dadd;
+      --c-header: #33434b;
+      --c-success: #4b8e62;
+      --c-error: #b45249;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--c-text);
+      background: var(--c-bg);
+    }
+    header.site {
+      background: var(--c-header);
+      color: #fff;
+      padding: 14px 24px;
+    }
+    header.site a { color: #fff; text-decoration: none; }
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .tool {
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: 8px;
+      padding: 32px 28px;
+      margin: 24px 0;
+    }
+    h1 { margin: 0 0 6px; font-size: 26px; color: var(--c-header); }
+    h1 + p { margin: 0 0 18px; color: var(--c-muted); }
+    .dropzone {
+      border: 2px dashed var(--c-border);
+      border-radius: 6px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .dropzone:hover { border-color: var(--c-accent); background: #f1f6fa; }
+    .dropzone.dragover { border-color: var(--c-accent); background: #e8f3fa; }
+    .target-row {
+      display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0;
+    }
+    .target-btn {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 14px;
+    }
+    .target-btn.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+    .actions { display: flex; gap: 10px; margin: 18px 0; }
+    .btn {
+      background: var(--c-accent); color: #fff; border: 0;
+      padding: 10px 18px; border-radius: 4px; font-size: 15px; cursor: pointer;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-secondary { background: var(--c-surface); color: var(--c-accent); border: 1px solid var(--c-accent); }
+    .progress {
+      height: 8px; background: #e1e6e8; border-radius: 4px; overflow: hidden;
+      margin: 18px 0; display: none;
+    }
+    .progress.active { display: block; }
+    .progress-bar { height: 100%; background: var(--c-accent); width: 0%; transition: width 0.3s; }
+    .status { padding: 10px 14px; border-radius: 4px; margin: 12px 0; display: none; }
+    .status.active { display: block; }
+    .status.success { background: #e8f3ec; color: var(--c-success); }
+    .status.error { background: #faeae8; color: var(--c-error); }
+    .status.info { background: #eef4fa; color: var(--c-accent); }
+    .download-link {
+      display: inline-block; margin-top: 10px; padding: 10px 18px;
+      background: var(--c-success); color: #fff; border-radius: 4px;
+      text-decoration: none;
+    }
+    .ad-row { display: flex; justify-content: center; padding: 12px 0; }
+    footer.site { background: #1d2428; color: #aaa; padding: 20px 0; text-align: center; font-size: 13px; }
+    footer.site a { color: #ddd; margin: 0 8px; }
+    .related { margin: 24px 0; padding: 20px 0; border-top: 1px solid var(--c-border); }
+    .related h2 { font-size: 18px; color: var(--c-header); margin: 0 0 8px; }
+    .related a { color: var(--c-accent); display: block; padding: 4px 0; }
+  </style>
+</head>
+<body>
+
+<header class="site">
+  <div class="container">
+    <a href="/"><strong>TrueScoped</strong></a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="ad-row">
+    <div data-ad="728x90"></div>
+  </div>
+
+  <div class="tool">
+    <h1>PDF Compressor</h1>
+    <p>Compress a PDF to a target file size. 100% in-browser — your file never leaves your device.</p>
+
+    <div class="dropzone" id="dropzone">
+      <p style="margin:0;font-size:16px;"><strong>Drop your PDF here</strong> or click to choose</p>
+      <p style="margin:6px 0 0;color:var(--c-muted);font-size:13px;">Max ~50&nbsp;MB recommended for browser performance</p>
+      <input type="file" id="fileInput" accept="application/pdf" style="display:none">
+    </div>
+
+    <div id="fileInfo" style="margin-top:14px;color:var(--c-muted);"></div>
+
+    <h3 style="margin-top:20px;font-size:14px;color:var(--c-header);">Target file size</h3>
+    <div class="target-row" id="targetRow">
+      <button class="target-btn" data-target="100">100 KB</button>
+      <button class="target-btn active" data-target="300">300 KB</button>
+      <button class="target-btn" data-target="500">500 KB</button>
+      <button class="target-btn" data-target="1024">1 MB</button>
+      <button class="target-btn" data-target="2048">2 MB</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="compressBtn" disabled>Compress PDF</button>
+      <button class="btn btn-secondary" id="resetBtn">Reset</button>
+    </div>
+
+    <div class="progress" id="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div id="resultBlock" style="display:none;">
+      <a class="download-link" id="downloadLink" download="">Download compressed PDF</a>
+      <p id="resultMeta" style="margin-top:10px;color:var(--c-muted);font-size:13px;"></p>
+    </div>
+  </div>
+
+  <!-- Below-tool-result ad (300x250) - highest CTR placement -->
+  <div class="ad-row">
+    <div data-ad="300x250"></div>
+  </div>
+
+  <div class="related">
+    <h2>Related articles</h2>
+    <a href="/articles/compress-pdf-without-losing-quality/">The Complete Guide to Compressing a PDF (Without Losing Quality)</a>
+    <a href="/articles/compress-pdf-to-100kb/">How to Compress a PDF to 100 KB for Email Attachments</a>
+    <a href="/articles/compress-pdf-to-1mb/">How to Compress a PDF to 1 MB or Less</a>
+    <a href="/articles/merge-pdf-no-watermark/">How to Merge PDFs With No Watermark</a>
+  </div>
+
+</div>
+
+<!-- Footer banner ad (468x60) -->
+<div class="ad-row">
+  <div data-ad="468x60"></div>
+</div>
+
+<footer class="site">
+  <div class="container">
+    <a href="/about/">About</a>
+    <a href="/privacy/">Privacy</a>
+    <a href="/contact/">Contact</a>
+    <p style="margin:12px 0 0;">&copy; 2026 TrueScoped</p>
+  </div>
+</footer>
+
+<!-- Ad loader -->
+<script src="/ads/ads.js" defer></script>
+
+<!-- Tool logic — placeholder. Real implementation needs pdf-lib + quality/repeat loop -->
+<script>
+// TOOL IMPLEMENTATION TODO:
+// - Include pdf-lib: <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+// - For image downsampling: render each page to canvas via pdfjs, downscale, re-encode as JPEG
+// - Run a quality/repeat loop: quality 80 -> 60 -> 40 -> 20, then DPI 150 -> 100 -> 72, until target KB is met
+// - Re-pack as a new PDF with pdf-lib
+// Until this is implemented, the button shows an info banner.
+
+(function () {
+  'use strict';
+  var fileInput = document.getElementById('fileInput');
+  var dropzone = document.getElementById('dropzone');
+  var fileInfo = document.getElementById('fileInfo');
+  var compressBtn = document.getElementById('compressBtn');
+  var resetBtn = document.getElementById('resetBtn');
+  var progress = document.getElementById('progress');
+  var progressBar = document.getElementById('progressBar');
+  var status = document.getElementById('status');
+  var resultBlock = document.getElementById('resultBlock');
+  var downloadLink = document.getElementById('downloadLink');
+  var resultMeta = document.getElementById('resultMeta');
+  var targetRow = document.getElementById('targetRow');
+  var currentTarget = 300;  // KB
+  var currentFile = null;
+
+  dropzone.addEventListener('click', function () { fileInput.click(); });
+  dropzone.addEventListener('dragover', function (e) { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', function () { dropzone.classList.remove('dragover'); });
+  dropzone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', function (e) {
+    if (e.target.files && e.target.files[0]) handleFile(e.target.files[0]);
+  });
+
+  targetRow.querySelectorAll('.target-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      targetRow.querySelectorAll('.target-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentTarget = parseInt(btn.getAttribute('data-target'), 10);
+    });
+  });
+
+  function handleFile(file) {
+    if (file.type !== 'application/pdf') {
+      showStatus('error', 'Please choose a PDF file.');
+      return;
+    }
+    currentFile = file;
+    fileInfo.textContent = 'Selected: ' + file.name + ' (' + formatBytes(file.size) + ')';
+    compressBtn.disabled = false;
+  }
+
+  resetBtn.addEventListener('click', function () {
+    currentFile = null;
+    fileInfo.textContent = '';
+    compressBtn.disabled = true;
+    progress.classList.remove('active');
+    progressBar.style.width = '0%';
+    status.classList.remove('active');
+    resultBlock.style.display = 'none';
+    fileInput.value = '';
+  });
+
+  compressBtn.addEventListener('click', function () {
+    if (!currentFile) return;
+    // TODO: implement actual compression with pdf-lib + pdfjs
+    // For now, show an honest info banner.
+    progress.classList.add('active');
+    progressBar.style.width = '50%';
+    showStatus('info',
+      'Tool wiring is complete. The compression engine (pdf-lib + pdfjs) ' +
+      'needs to be plugged in before this button will produce a real compressed file. ' +
+      'See /tools/README.md for the implementation outline.');
+    progressBar.style.width = '100%';
+    setTimeout(function () { progress.classList.remove('active'); }, 1200);
+  });
+
+  function showStatus(type, msg) {
+    status.className = 'status active ' + type;
+    status.textContent = msg;
+  }
+
+  function formatBytes(b) {
+    if (b < 1024) return b + ' B';
+    if (b < 1024 * 1024) return (b/1024).toFixed(1) + ' KB';
+    return (b/(1024*1024)).toFixed(2) + ' MB';
+  }
+})();
+</script>
+
+</body>
+</html>
