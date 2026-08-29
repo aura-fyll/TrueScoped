@@ -1,0 +1,24 @@
+# Ad unit inventory for TrueScoped
+# Used by tools/ and article templates if they want to loop over ad units.
+# Each entry corresponds to a snippet in /ads/
+
+- size: "728x90"
+  name: "Leaderboard"
+  file: "ads/728x90.html"
+  key: "b8cb302039695a8ca6be0d1670ae3030"
+  network: "versatilesentiment.com"
+  use: "Top-of-page banner, above the H1, site header"
+
+- size: "300x250"
+  name: "Medium Rectangle"
+  file: "ads/300x250.html"
+  key: "3e064c14d68f63c18b5aa4b6b1873c46"
+  network: "versatilesentiment.com"
+  use: "Sidebar, in-content, below tool output"
+
+- size: "468x60"
+  name: "Full Banner"
+  file: "ads/468x60.html"
+  key: "0ed8bf9af74609561a1e84bb22ed0e94"
+  network: "versatilesentiment.com"
+  use: "Mid-article, footer, mobile fallback"
