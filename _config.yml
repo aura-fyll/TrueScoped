@@ -1,0 +1,39 @@
+# GitHub Pages configuration for TrueScoped
+# Uses Jekyll to render markdown articles as HTML pages.
+
+title: TrueScoped
+description: >-
+  Free, useful information website that answers real problems ordinary people
+  search for. Built for organic search. Ad-supported.
+baseurl: ""  # serve at root
+url: "https://truescoped.github.io"  # update to match the actual org/user domain
+
+markdown: kramdown
+highlighter: rouge
+permalink: /:categories/:title/
+theme: null  # we will use a minimal layout we control
+
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+defaults:
+  - scope:
+      path: ""        # all files
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: "articles"
+      type: "pages"
+    values:
+      layout: "article"
+
+# Exclude build artifacts from Pages
+exclude:
+  - scripts/
+  - research/
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - .gitignore
