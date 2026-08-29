@@ -1,0 +1,17 @@
+# Build artifacts
+_site/
+.jekyll-cache/
+.jekyll-metadata
+
+# Bundler
+Gemfile.lock
+
+# Node
+node_modules/
+package-lock.json
+
+# Editor
+.vscode/
+.idea/
+.DS_Store
+*.swp
